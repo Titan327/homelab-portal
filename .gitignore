@@ -7,5 +7,6 @@ Thumbs.db
 
 ./maven_cache
 ./mongodb_data
+./code/target
 
 ./code/target
