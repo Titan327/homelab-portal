@@ -4,3 +4,5 @@
 Thumbs.db
 
 .env
+
+./code/target
