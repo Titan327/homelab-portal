@@ -12,7 +12,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: admin123
       MONGO_INITDB_DATABASE: monapi
     volumes:
-      - mongodb_data:/data/db
+      - ./mongodb_data:/data/db
     networks:
       - app-network
 
@@ -24,8 +24,8 @@ services:
       - "8080:8080"
     working_dir: /app
     volumes:
-      - ./:/app
-      - maven_cache:/root/.m2
+      - ./code:/app
+      - ./maven_cache:/root/.m2
     command: mvn spring-boot:run
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://admin:admin123@mongodb:27017/monapi?authSource=admin
@@ -49,10 +49,6 @@ services:
       - mongodb
     networks:
       - app-network
-
-volumes:
-  mongodb_data:
-  maven_cache:
 
 networks:
   app-network:
