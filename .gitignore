@@ -5,8 +5,6 @@ Thumbs.db
 
 .env
 
-./maven_cache
-./mongodb_data
-./code/target
-
-./code/target
+./maven_cache/
+./mongodb_data/
+./code/target/
