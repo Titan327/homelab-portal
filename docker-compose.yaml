@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mongodb:
     image: mongo:7.0
@@ -16,19 +14,19 @@ services:
     networks:
       - app-network
 
-  api:
-    image: maven:3.9-eclipse-temurin-21
-    container_name: spring-api
-    restart: unless-stopped
+  spring-app:
+    container_name: spring-app
+    build:
+      context: ./app
+      target: dev
     ports:
       - "8080:8080"
-    working_dir: /app
     volumes:
-      - ./code:/app
+      - ./app/src:/app/src
+      - ./app/pom.xml:/app/pom.xml
       - ./maven_cache:/root/.m2
-    command: mvn spring-boot:run
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://admin:admin123@mongodb:27017/monapi?authSource=admin
+      - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       - mongodb
     networks:
@@ -49,6 +47,10 @@ services:
       - mongodb
     networks:
       - app-network
+
+# AJOUT: Déclaration des volumes
+volumes:
+  maven-cache:
 
 networks:
   app-network:
