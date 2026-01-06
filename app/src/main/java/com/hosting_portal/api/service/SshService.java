@@ -36,19 +36,16 @@ public class SshService {
 
         try {
 
-            try {
-                ClassPathResource resource = new ClassPathResource("known_hosts");
-                if (resource.exists()) {
-                    InputStream knownHostsStream = resource.getInputStream();
-                    jsch.setKnownHosts(knownHostsStream);
-                    log.info("✅ Fichier known_hosts chargé (vérification sécurisée activée)");
-                } else {
-                    log.warn("⚠️ Fichier known_hosts non trouvé dans resources");
-                }
-            } catch (Exception e) {
-                log.error("❌ Erreur lors du chargement de known_hosts: {}", e.getMessage());
-                throw new RuntimeException("Impossible de charger le fichier known_hosts", e);
+            ClassPathResource resource = new ClassPathResource("known_hosts");
+
+            if (!resource.exists()) {
+                log.error("ERREUR FATALE: Fichier known_hosts INTROUVABLE dans src/main/resources/");
+                throw new RuntimeException("SÉCURITÉ: Le fichier known_hosts est OBLIGATOIRE. Placez-le dans src/main/resources/known_hosts");
             }
+
+            InputStream knownHostsStream = resource.getInputStream();
+            jsch.setKnownHosts(knownHostsStream);
+            log.info("Fichier known_hosts chargé (vérification sécurisée activée)");
 
             log.info("Connexion SSH à {}@{}:{}", username, host, port);
 
