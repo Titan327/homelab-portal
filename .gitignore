@@ -9,4 +9,6 @@ maven_cache/
 mongodb_data/
 app/target/
 
-app/src/main/resources/known_hosts
+ssh_credentials/known_hosts
+ssh_credentials/hosting-portal-key
+ssh_credentials/hosting-portal-key.pub

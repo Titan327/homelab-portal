@@ -25,8 +25,9 @@ services:
       - ./app/src:/app/src
       - ./app/pom.xml:/app/pom.xml
       - ./maven_cache:/root/.m2
+      - ./ssh_credentials/hosting-portal-key:/app/ssh/hosting-portal-key:ro
+      - ./ssh_credentials/known_hosts:/app/config/known_hosts:ro
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
       - SSH_HOST=${SSH_HOST}
       - SSH_PORT=${SSH_PORT}
       - SSH_USERNAME=${SSH_USERNAME}

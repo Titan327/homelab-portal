@@ -4,11 +4,10 @@ import com.jcraft.jsch.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.io.File;
 
 @Service
 public class SshService {
@@ -27,7 +26,6 @@ public class SshService {
     @Value("${ssh.default.password}")
     private String password;
 
-
     public String executeCommand(String command) {
 
         JSch jsch = new JSch();
@@ -36,22 +34,31 @@ public class SshService {
 
         try {
 
-            ClassPathResource resource = new ClassPathResource("known_hosts");
+            String knownHostsPath = "/app/config/known_hosts";
+            String privateKeyPath = "/app/ssh/hosting-portal-key";
 
-            if (!resource.exists()) {
-                log.error("ERREUR FATALE: Fichier known_hosts INTROUVABLE dans src/main/resources/");
-                throw new RuntimeException("SÉCURITÉ: Le fichier known_hosts est OBLIGATOIRE. Placez-le dans src/main/resources/known_hosts");
+            File knownHostsFile = new File(knownHostsPath);
+
+            if (!knownHostsFile.exists()) {
+                log.error("ERREUR FATALE: Fichier known_hosts INTROUVABLE: {}", knownHostsPath);
+                throw new RuntimeException("SÉCURITÉ: Le fichier known_hosts est OBLIGATOIRE: " + knownHostsPath);
             }
 
-            InputStream knownHostsStream = resource.getInputStream();
-            jsch.setKnownHosts(knownHostsStream);
-            log.info("Fichier known_hosts chargé (vérification sécurisée activée)");
+            jsch.setKnownHosts(knownHostsPath);
+            log.info("Fichier known_hosts chargé");
+
+            File privateKeyFile = new File(privateKeyPath);
+
+            if (!privateKeyFile.exists()) {
+                log.error("ERREUR: Clé SSH privée introuvable: {}", privateKeyPath);
+                throw new RuntimeException("Clé SSH privée introuvable: " + privateKeyPath);
+            }
+
+            jsch.addIdentity(privateKeyPath);
+            log.info("Clé SSH privée chargée depuis: {}", privateKeyPath);
 
             log.info("Connexion SSH à {}@{}:{}", username, host, port);
-
-            // création de la session ssh
             session = jsch.getSession(username, host, port);
-            session.setPassword(password);
 
             // Configuration pour forcer la vérification des clefs via le fichier know host
             session.setConfig("StrictHostKeyChecking", "yes");
@@ -125,47 +132,5 @@ public class SshService {
         }
 
         return results.toString();
-    }
-
-    /**
-     * Connexion avec clé privée SSH
-     */
-    public String executeCommandWithKey(String host, int port, String username,
-                                        String privateKeyPath, String command) {
-
-        JSch jsch = new JSch();
-        Session session = null;
-        ChannelExec channelExec = null;
-
-        try {
-            log.info("Connexion SSH avec clé privée à {}@{}:{}", username, host, port);
-
-            // Ajouter la clé privée
-            jsch.addIdentity(privateKeyPath);
-
-            session = jsch.getSession(username, host, port);
-            session.setConfig("StrictHostKeyChecking", "no");
-            session.connect(10000);
-
-            channelExec = (ChannelExec) session.openChannel("exec");
-            channelExec.setCommand(command);
-
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            channelExec.setOutputStream(outputStream);
-            channelExec.connect();
-
-            while (!channelExec.isClosed()) {
-                Thread.sleep(100);
-            }
-
-            return outputStream.toString();
-
-        } catch (Exception e) {
-            log.error("Erreur SSH avec clé: {}", e.getMessage());
-            throw new RuntimeException("Erreur SSH: " + e.getMessage(), e);
-        } finally {
-            if (channelExec != null) channelExec.disconnect();
-            if (session != null) session.disconnect();
-        }
     }
 }
