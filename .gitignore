@@ -8,3 +8,5 @@ Thumbs.db
 maven_cache/
 mongodb_data/
 app/target/
+
+app/src/main/resources/known_hosts/known_hosts
