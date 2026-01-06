@@ -4,9 +4,11 @@ import com.jcraft.jsch.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 
 @Service
 public class SshService {
@@ -33,15 +35,29 @@ public class SshService {
         ChannelExec channelExec = null;
 
         try {
+
+            try {
+                ClassPathResource resource = new ClassPathResource("known_hosts");
+                if (resource.exists()) {
+                    InputStream knownHostsStream = resource.getInputStream();
+                    jsch.setKnownHosts(knownHostsStream);
+                    log.info("✅ Fichier known_hosts chargé (vérification sécurisée activée)");
+                } else {
+                    log.warn("⚠️ Fichier known_hosts non trouvé dans resources");
+                }
+            } catch (Exception e) {
+                log.error("❌ Erreur lors du chargement de known_hosts: {}", e.getMessage());
+                throw new RuntimeException("Impossible de charger le fichier known_hosts", e);
+            }
+
             log.info("Connexion SSH à {}@{}:{}", username, host, port);
 
-            // Créer la session SSH
+            // création de la session ssh
             session = jsch.getSession(username, host, port);
             session.setPassword(password);
 
-            // Configuration pour éviter la vérification stricte des clés
-            // ATTENTION: À utiliser uniquement en dev/test
-            session.setConfig("StrictHostKeyChecking", "no");
+            // Configuration pour forcer la vérification des clefs via le fichier know host
+            session.setConfig("StrictHostKeyChecking", "yes");
 
             // Connexion avec timeout de 10 secondes
             session.connect(10000);
@@ -60,9 +76,7 @@ public class SshService {
 
             // Exécuter la commande
             channelExec.connect();
-            log.info("Commande exécutée: {}", command);
 
-            // Attendre la fin de l'exécution
             while (!channelExec.isClosed()) {
                 Thread.sleep(100);
             }
