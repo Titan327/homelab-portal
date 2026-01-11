@@ -15,15 +15,24 @@ public class HelloController {
         this.sshService = sshService;
     }
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello Worldssss";
+    @GetMapping("/health")
+    public String health() {
+        String result = sshService.executeCommand("sudo pvesh get /nodes/proxmox/services --output-format json");
+        log.info(result);
+        return result;
     }
 
-    @GetMapping("/hello2")
-    public String hello2() {
-        String result = sshService.executeCommand("echo 'hi'");
+    @GetMapping("/listAllLXC")
+    public String listAllLXC() {
+        String result = sshService.executeCommand("sudo pvesh get /nodes/proxmox/lxc --output-format json");
         log.info(result);
-        return "Hello";
+        return result;
+    }
+
+    @GetMapping("/listAllVM")
+    public String listAllVM() {
+        String result = sshService.executeCommand("sudo pvesh get /nodes/proxmox/qemu --output-format json");
+        log.info(result);
+        return result;
     }
 }

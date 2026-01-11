@@ -45,17 +45,14 @@ public class SshService {
             }
 
             jsch.setKnownHosts(knownHostsPath);
-            log.info("Fichier known_hosts chargé");
 
             File privateKeyFile = new File(privateKeyPath);
 
             if (!privateKeyFile.exists()) {
-                log.error("ERREUR: Clé SSH privée introuvable: {}", privateKeyPath);
                 throw new RuntimeException("Clé SSH privée introuvable: " + privateKeyPath);
             }
 
             jsch.addIdentity(privateKeyPath);
-            log.info("Clé SSH privée chargée depuis: {}", privateKeyPath);
 
             log.info("Connexion SSH à {}@{}:{}", username, host, port);
             session = jsch.getSession(username, host, port);
