@@ -1,0 +1,21 @@
+meta {
+  name: Raid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{URL}}/health/:name/raid/:raid
+  body: none
+  auth: inherit
+}
+
+params:path {
+  raid: tank
+  name: proxmox
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -67,6 +67,7 @@ public class SshService {
             // Ouvrir un canal pour exécuter la commande
             channelExec = (ChannelExec) session.openChannel("exec");
             channelExec.setCommand(command);
+            log.info(command);
 
             // Capturer la sortie standard et les erreurs
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

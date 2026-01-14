@@ -1,13 +1,17 @@
 meta {
-  name: List all LXC
+  name: Raid
   type: http
-  seq: 1
+  seq: 4
 }
 
 get {
-  url: {{URL}}/listAllLXC
+  url: {{URL}}/list/:node/raid
   body: none
   auth: inherit
+}
+
+params:path {
+  node: proxmox
 }
 
 settings {

@@ -1,13 +1,17 @@
 meta {
-  name: Health
+  name: Node
   type: http
-  seq: 4
+  seq: 1
 }
 
 get {
-  url: {{URL}}/health
+  url: {{URL}}/health/:name
   body: none
   auth: inherit
+}
+
+params:path {
+  name: proxmox
 }
 
 settings {

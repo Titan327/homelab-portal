@@ -1,0 +1,20 @@
+meta {
+  name: LXC
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{URL}}/list/:node/lxc
+  body: none
+  auth: inherit
+}
+
+params:path {
+  node: proxmox
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -15,6 +15,13 @@ public class HelloController {
         this.sshService = sshService;
     }
 
+    @GetMapping( "/listNodes")
+    public String nodes() {
+        String result = sshService.executeCommand("sudo pvesh get /nodes --output-format json");
+        log.info(result);
+        return result;
+    }
+
     @GetMapping("/health")
     public String health() {
         String result = sshService.executeCommand("sudo pvesh get /nodes/proxmox/services --output-format json");
