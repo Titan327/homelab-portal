@@ -25,6 +25,7 @@ public class HealthController {
         return result;
     }
 
+    // TODO remplacer par juste un get pour savoir si tel raid est online avec des infos sur chaque disque du style n rais: online {Disk1:online, Disk2:online}
     @GetMapping("/{node}/raid/{raid}")
     public String healthOfRaid(@PathVariable String node,@PathVariable String raid) {
         String result = sshService.executeCommand("sudo pvesh get /nodes/"+node+"/disks/zfs/"+raid+" --output-format json");
