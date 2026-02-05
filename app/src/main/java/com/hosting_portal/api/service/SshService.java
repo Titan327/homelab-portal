@@ -23,9 +23,6 @@ public class SshService {
     @Value("${ssh.default.username}")
     private String username;
 
-    @Value("${ssh.default.password}")
-    private String password;
-
     public String executeCommand(String command) {
 
         JSch jsch = new JSch();
