@@ -59,11 +59,6 @@
 			<artifactId>jsch</artifactId>
 			<version>0.2.20</version>
 		</dependency>
-		<dependency>
-			<groupId>io.minio</groupId>
-			<artifactId>minio</artifactId>
-			<version>8.6.0</version>
-		</dependency>
 	</dependencies>
 
 	<build>

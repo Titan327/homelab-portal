@@ -18,6 +18,11 @@ public class HealthController {
         this.sshService = sshService;
     }
 
+    @GetMapping("/")
+    public String health() {
+        return "ok";
+    }
+
     @GetMapping("/{node}")
     public String healthOfNode(@PathVariable String node) {
         String result = sshService.executeCommand("sudo pvesh get /nodes/"+node+"/services --output-format json");
