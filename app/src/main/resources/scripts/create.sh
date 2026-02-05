@@ -1,13 +1,9 @@
 #!/bin/bash
 
-read -p "Entrez l'ID du conteneur (CTID): " CTID
-
 if [ -z "$CTID" ]; then
     echo "Erreur: Vous devez entrer un CTID"
     exit 1
 fi
-
-read -p "Entrez la quantité de RAM en Mo (ex: 1024, 2048, 3072, 4096, 5120, 6144, 7168, 8192): " MEMORY
 
 if [ -z "$MEMORY" ]; then
     echo "Erreur: Vous devez entrer une quantité de RAM"

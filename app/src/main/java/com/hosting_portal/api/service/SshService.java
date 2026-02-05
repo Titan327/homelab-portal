@@ -4,10 +4,14 @@ import com.jcraft.jsch.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @Service
 public class SshService {
@@ -127,5 +131,59 @@ public class SshService {
         }
 
         return results.toString();
+    }
+
+    /**
+     * Exécute un script avec des variables d'environnement
+     */
+    public String executeResourceScript(String scriptName, Map<String, String> variables) {
+        try {
+            log.info("📄 Lecture du script: {}", scriptName);
+
+            ClassPathResource resource = new ClassPathResource("scripts/" + scriptName);
+
+            if (!resource.exists()) {
+                throw new RuntimeException("Script introuvable: scripts/" + scriptName);
+            }
+
+            String scriptContent = new String(
+                    resource.getInputStream().readAllBytes(),
+                    StandardCharsets.UTF_8
+            );
+
+            StringBuilder envVars = new StringBuilder();
+            if (variables != null && !variables.isEmpty()) {
+                log.info("Variables injectées: {}", variables.keySet());
+                for (Map.Entry<String, String> entry : variables.entrySet()) {
+                    String escapedValue = entry.getValue().replace("'", "'\\''");
+                    envVars.append(String.format("export %s='%s'\n",
+                            entry.getKey(),
+                            escapedValue));
+                }
+            }
+
+            String command = String.format(
+                    "bash << 'END_OF_SCRIPT'\n%s%s\nEND_OF_SCRIPT",
+                    envVars,
+                    scriptContent
+            );
+
+            log.info("Exécution du script via SSH...");
+            String result = executeCommand(command);
+
+            log.info("Script exécuté avec succès");
+            return result;
+
+        } catch (IOException e) {
+            log.error("Erreur lecture du script {}: {}", scriptName, e.getMessage());
+            throw new RuntimeException("Impossible de lire le script: " + scriptName, e);
+        }
+    }
+
+    /**
+     * Surcharge pour exécuter sans variables
+     */
+    public String executeResourceScript(String scriptName) {
+        return executeResourceScript(scriptName, null);
     }
 }
