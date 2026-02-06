@@ -54,13 +54,13 @@ done
 pct exec $CTID -- apt-get update -y
 pct exec $CTID -- apt-get upgrade -y
 
-pct push $CTID ./ssh.sh /tmp/script.sh
-pct exec $CTID -- bash /tmp/script.sh
-pct exec $CTID -- rm /tmp/script.sh
+#pct push $CTID ./ssh.sh /tmp/script.sh
+#pct exec $CTID -- bash /tmp/script.sh
+#pct exec $CTID -- rm /tmp/script.sh
 
-pct push $CTID ./gitlab.sh /tmp/script.sh
-pct exec $CTID -- bash /tmp/script.sh
-pct exec $CTID -- rm /tmp/script.sh
+#pct push $CTID ./gitlab.sh /tmp/script.sh
+#pct exec $CTID -- bash /tmp/script.sh
+#pct exec $CTID -- rm /tmp/script.sh
 
 #pct push $CTID ./docker.sh /tmp/script.sh
 #pct exec $CTID -- bash /tmp/script.sh

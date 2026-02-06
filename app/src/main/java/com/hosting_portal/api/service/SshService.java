@@ -70,12 +70,11 @@ public class SshService {
             channelExec.setCommand(command);
             log.info(command);
 
-            // Capturer la sortie standard et les erreurs
+            // Capturer TOUT dans le même flux (stdout + stderr)
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
             channelExec.setOutputStream(outputStream);
-            channelExec.setErrStream(errorStream);
+            channelExec.setErrStream(outputStream);  // Combine stdout + stderr
 
             // Exécuter la commande
             channelExec.connect();
@@ -86,15 +85,14 @@ public class SshService {
 
             // Récupérer le code de sortie
             int exitStatus = channelExec.getExitStatus();
-            log.info("Code de sortie: {}", exitStatus);
-
-            // Récupérer les résultats
             String output = outputStream.toString();
-            String error = errorStream.toString();
 
-            if (exitStatus != 0 && !error.isEmpty()) {
-                log.error("Erreur d'exécution: {}", error);
-                return "ERREUR: " + error;
+            log.info("Code de sortie: {}", exitStatus);
+            log.info("SORTIE BASH (stdout + stderr):\n{}", output);
+
+            if (exitStatus != 0) {
+                log.error("Commande échouée avec le code: {}", exitStatus);
+                throw new RuntimeException("Erreur SSH (code " + exitStatus + "): " + output);
             }
 
             return output;
@@ -138,7 +136,7 @@ public class SshService {
      */
     public String executeResourceScript(String scriptName, Map<String, String> variables) {
         try {
-            log.info("📄 Lecture du script: {}", scriptName);
+            log.info("Lecture du script: {}", scriptName);
 
             ClassPathResource resource = new ClassPathResource("scripts/" + scriptName);
 
@@ -169,9 +167,13 @@ public class SshService {
             );
 
             log.info("Exécution du script via SSH...");
+            log.info("Commande complète:\n{}", command);
+
             String result = executeCommand(command);
 
             log.info("Script exécuté avec succès");
+            log.info("SORTIE COMPLÈTE DU SCRIPT:\n{}", result);
+
             return result;
 
         } catch (IOException e) {

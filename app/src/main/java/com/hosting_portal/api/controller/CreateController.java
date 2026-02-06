@@ -29,9 +29,7 @@ public class CreateController {
         variables.put("CTID", "300");
         variables.put("MEMORY", "4096");
 
-        String result1 = sshService.executeResourceScript("test.sh", variables);
-        String result2 = sshService.executeResourceScript("ssh.sh", variables);
-        String result3 = sshService.executeResourceScript("gitlab.sh", variables);
+        String result = sshService.executeResourceScript("test.sh", variables);
         log.info(result);
 
         return Map.of(
