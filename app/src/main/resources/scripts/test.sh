@@ -29,8 +29,10 @@ sudo pct create $CTID local:vztmpl/debian-12-standard_12.12-1_amd64.tar.zst \
   --cores 1 \
   --net0 name=eth0,bridge=vmbr0,ip=dhcp \
   --onboot 1 \
-  --unprivileged 1
+  --unprivileged 1 > /dev/null 2>&1
 
 sudo pct start $CTID
+
+sudo pct destroy $CTID --purge --force
 
 echo "TEST OK"

@@ -1,0 +1,22 @@
+meta {
+  name: Create LXC
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{URL}}/create/LXC
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "addOn": ["item1", "item2", "item3"]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
